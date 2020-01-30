@@ -32,8 +32,6 @@ namespace Api
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule(new CoreAutofacModule());
-            //builder.RegisterModule(new DomainAutofacModule());
-
             builder.RegisterConfiguredModulesFromAssemblyContaining<DomainAutofacModule>(Configuration);
         }
 
@@ -55,7 +53,7 @@ namespace Api
             app.UseAuthorization();
 
 
-
+            
 
             app.UseEndpoints(endpoints =>
             {

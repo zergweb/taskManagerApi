@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Dtos;
 using Infrastructure.Entitys;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -12,65 +14,24 @@ namespace Api.Controllers
     [Route("api/tasks")]
     public class TaskManagerController : ControllerBase
     {
-        private readonly BookService _bookService;
+        private readonly TaskManagerService _taskService;
 
-        public TaskManagerController(BookService bookService)
+        public TaskManagerController(TaskManagerService taskService)
         {
-            _bookService = bookService;
-        }
-        [HttpGet]
-        public ActionResult<List<Book>> Get() =>
-           _bookService.Get();
-
-        [HttpGet("{id:length(24)}", Name = "GetBook")]
-        public ActionResult<Book> Get(string id)
-        {
-            var book = _bookService.Get(id);
-
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            return book;
+            _taskService = taskService;
         }
 
-        [HttpPost]
-        public ActionResult<Book> Create(Book book)
+        [HttpGet("init")]
+        public async Task<ActionResult> InitDb()
         {
-            _bookService.Create(book);
-
-            return CreatedAtRoute("GetBook", new { id = book.Id.ToString() }, book);
+            await _taskService.InitDbAsync();
+            return Ok();
         }
-
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Book bookIn)
+        [HttpGet("getData")]
+        public async Task<ActionResult> GetData()
         {
-            var book = _bookService.Get(id);
-
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            _bookService.Update(id, bookIn);
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
-        {
-            var book = _bookService.Get(id);
-
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            _bookService.Remove(book.Id);
-
-            return NoContent();
+            var (template, tasks) = await _taskService.GetDataAsync();
+            return Ok(new TasksDto() { Template = template, Tasks = tasks});
         }
     }
  }

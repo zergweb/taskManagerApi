@@ -1,16 +1,17 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Infrastructure.Entitys
 {
-    public class Book
+    public class TaskTemplate
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-
-        [BsonElement("Name")]
-        public string Name { get; set; }
+        public TaskFieldEnum[] EnumFields { get; set; }
+        public TaskField[] Fields { get; set; }
     }
 }
